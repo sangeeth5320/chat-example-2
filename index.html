@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: pink; padding: 3px; position: fixed; bottom: 0; width: 100%; height:40% }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+      #welcome { list-style-type: none; margin: 0; padding: 0; }
+      #notifyUser {position:fixed; bottom: 42px; width:100%;}
+      #notifyUser li { padding: 5px 10px; }
+      #notifyUser li:nth-child(odd) { background: #eee; }
+      </style>
+  </head>
+  <body>
+     <b>Chat Application </b> <br />
+      <ul id="messages"></ul> <br />
+        <span id="notifyUser"></span> 
+           <form id="form" action="" onsubmit="return submitfunction();"> 
+               Enter user name   <input id="uname"  autocomplete="off" /><button>Enter</button> 
+                <br />
+               <br /> <br /> 
+       
+           <input id="m" autocomplete="off" onkeyup="notifyTyping();"placeholder="Type your message here..."/><button>Send</button> 
+               <br /> <br />
+               <p>Move over the button to get your coordinates.</p>
+
+               <button onmouseover="getLocation()" onmouseout="removeLocation()"> Find Location </button>
+
+               <p id="demo"></p>
+
+    </form>
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+  var socket = io();
+  function submitfunction()
+  {
+      var from = $('#uname').val();
+      var message = $('#m').val();
+      if (from == '')
+      { $('#uname').val('').focus(); }
+      if (from != '') {
+          
+          if (message != '') {
+              socket.emit('chat message', from, message);
+          }
+          $('#m').val('').focus();
+      }
+         return false;
+  }
+  function notifyTyping() {
+      var me = $('#uname').val();
+      socket.emit('welcome', from);
+      ////////////////////////////////////////////////////  code heree ......
+     // $('#notifyUser').append(me+'istying');
+  }
+     
+  socket.on('chat message', function (from,msg)
+  {
+      var me = $('#uname').val();
+      var color = (from == me) ? 'green' : '#009afd';
+      var from = (from == me) ? 'Me' : from;
+      $('#messages').append('<li><b style="color:' + color + '">' + from + '</b>: ' + msg + '</li>');
+          
+           
+  });
+  socket.on('notifyUser', function(user){
+      var me = $('#uname').val();
+      //////////////////////  here comes problem .........
+      if(user != me) {
+          $('#notifyUser').text(user + ' is typing ...');
+      }
+      setTimeout(function(){ $('#notifyUser').text(''); }, 10000);;
+  });
+ 
+  
+   
+</script>
+
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        x.innerHTML= "Geolocation is not supported by this browser.";
+    }
+}
+function removeLocation() {
+    x.innerHTML = "";
+}
+function showPosition(position) {
+    x.innerHTML = "Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude;	
+}
+   
+</script>
+
+
+  </body>
+</html>
