@@ -5,10 +5,6 @@ chat app with few more functionalities
 2. Location of the user 
 
 
-
-
-To be added ( process going on ... )
-
 * isTyping
 * welcome functionality
-* shift enter functionality
+
